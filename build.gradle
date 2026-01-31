@@ -1,0 +1,420 @@
+// ============================================================================
+// Plugin Configuration
+// ============================================================================
+plugins {
+    id 'base'
+}
+
+// ============================================================================
+// Project Properties
+// ============================================================================
+ext {
+    // Directory structure
+    dataDir = file("data")
+    serverDir = file("data/server")
+    unpackedDir = file("data/unpacked")
+    distDir = file("dist")
+    
+    // Assets
+    userAssetsDir = file("assets")              // User-authored assets for packing
+    serverAssetsDir = file("data/assets")       // Extracted vanilla assets from server
+    
+    // Server files
+    serverJar = file("data/server/Server/HytaleServer.jar")
+    assetsZip = file("data/server/Assets.zip")
+    modsDir = file("data/server/Server/mods")
+    
+    // Docker
+    composeFile = file("compose.yml")
+}
+
+// ============================================================================
+// Helper Functions
+// ============================================================================
+
+/**
+ * Execute a shell command with optional error handling and output capture
+ */
+def runCommand(List<String> command, boolean ignoreExitValue = false, File workingDir = null, boolean quiet = false) {
+    def processBuilder = new ProcessBuilder(command)
+    if (workingDir != null) {
+        processBuilder.directory(workingDir)
+    }
+    processBuilder.redirectErrorStream(true)
+
+    def process = processBuilder.start()
+    def output = new StringBuilder()
+    process.inputStream.newReader().eachLine { line ->
+        output.append(line).append('\n')
+        if (!quiet) {
+            println(line)
+        }
+    }
+
+    int exitCode = process.waitFor()
+    if (exitCode != 0 && !ignoreExitValue) {
+        throw new IllegalStateException("Command failed (${command.join(' ')}), exit code ${exitCode}\n${output}")
+    }
+
+    return [exitCode: exitCode, output: output.toString()]
+}
+
+/**
+ * Ensure directory exists with proper ownership (skipped in CI)
+ */
+def ensureDirectoryOwned(File dir) {
+    if (!dir.exists()) {
+        if (!dir.mkdirs()) {
+            throw new IllegalStateException("Failed to create directory ${dir}")
+        }
+    }
+    if (!System.getenv("CI")) {
+        runCommand(["chown", "1000:1000", dir.absolutePath])
+    }
+}
+
+/**
+ * Wait for a file to appear with timeout
+ */
+def waitForFile(File target, int timeoutSeconds, int intervalSeconds) {
+    long deadline = System.currentTimeMillis() + (timeoutSeconds * 1000L)
+    while (System.currentTimeMillis() < deadline) {
+        if (target.exists()) {
+            return
+        }
+        sleep(intervalSeconds * 1000L)
+    }
+    throw new IllegalStateException("Timed out waiting for ${target}")
+}
+
+// ============================================================================
+// Setup Tasks
+// Tasks for initial project setup: directories, server JAR, assets, and API
+// ============================================================================
+
+tasks.register("setup") {
+    group = "setup"
+    description = "Prepare local data, assets, and unpacked API"
+    dependsOn "ensureDirectories", "ensureServerJar", "unpackAssets", "unpackJar"
+}
+
+tasks.register("ensureDirectories") {
+    group = "setup"
+    description = "Ensure data directories exist with uid:gid 1000:1000"
+    def dirs = [serverDir, userAssetsDir, serverAssetsDir, unpackedDir]
+    def isCI = System.getenv("CI")
+    doLast {
+        dirs.each { dir ->
+            if (!dir.exists()) {
+                if (!dir.mkdirs()) {
+                    throw new IllegalStateException("Failed to create directory ${dir}")
+                }
+            }
+            if (!isCI) {
+                def proc = new ProcessBuilder(["chown", "1000:1000", dir.absolutePath])
+                    .redirectErrorStream(true)
+                    .start()
+                def output = new StringBuilder()
+                proc.inputStream.newReader().eachLine { output.append(it).append('\\n') }
+                int exitCode = proc.waitFor()
+                if (exitCode != 0) {
+                    throw new IllegalStateException("chown failed with exit code ${exitCode}\\n${output}")
+                }
+            }
+        }
+    }
+}
+
+tasks.register("ensureModsDir") {
+    group = "setup"
+    description = "Ensure server mods directory exists with uid:gid 1000:1000"
+    dependsOn "ensureDirectories"
+    doLast {
+        ensureDirectoryOwned(modsDir)
+    }
+}
+
+tasks.register("ensureServerJar") {
+    group = "setup"
+    description = "Start docker compose to produce HytaleServer.jar when missing"
+    dependsOn "ensureDirectories"
+    onlyIf { !serverJar.exists() }
+    doLast {
+        if (System.getenv("CI")) {
+            def downloadUrl = System.getenv("HYTALE_SERVER_JAR_DOWNLOAD_URL")
+            if (!downloadUrl) {
+                throw new IllegalStateException(
+                    "HytaleServer.jar not found in CI. " +
+                    "Set HYTALE_SERVER_JAR_DOWNLOAD_URL environment variable to download the jar. " +
+                    "See docs/CI_REQUIREMENT.md for details."
+                )
+            }
+            logger.lifecycle("Downloading HytaleServer.jar from URL...")
+            serverJar.parentFile.mkdirs()
+            
+            def tempFile = new File(serverJar.parentFile, "HytaleServer.jar.tmp")
+            tempFile.delete() // Clean up any previous failed download
+            
+            // Use curl with follow redirects and progress for large files
+            def result = runCommand(["curl", "-L", "-o", tempFile.absolutePath, "--fail", "--progress-bar", downloadUrl], true)
+            
+            if (result.exitCode != 0) {
+                tempFile.delete()
+                throw new IllegalStateException(
+                    "Failed to download HytaleServer.jar (curl exit code: ${result.exitCode}). " +
+                    "Verify HYTALE_SERVER_JAR_DOWNLOAD_URL is a valid direct download link."
+                )
+            }
+            
+            // Verify the downloaded file exists and has reasonable size
+            if (!tempFile.exists() || tempFile.length() < 1024 * 1024) {
+                def actualSize = tempFile.exists() ? tempFile.length() : 0
+                def preview = ""
+                if (tempFile.exists() && tempFile.length() > 0) {
+                    def content = tempFile.text.take(500)
+                    preview = "\n\nFirst 500 chars of downloaded file:\n${content}"
+                }
+                tempFile.delete()
+                throw new IllegalStateException(
+                    "Downloaded HytaleServer.jar is missing or too small (${actualSize} bytes). " +
+                    "Expected at least 1MB (actual jar is ~80MB). " +
+                    "Verify the download URL provides a direct file download, not an HTML page or sharing link." +
+                    preview
+                )
+            }
+            
+            // Verify the downloaded file is a valid JAR/ZIP
+            def isValidJar = false
+            def jarError = ""
+            try {
+                def zipFile = new java.util.zip.ZipFile(tempFile)
+                try {
+                    // Check if it has at least one entry (valid ZIP structure)
+                    isValidJar = zipFile.entries().hasMoreElements()
+                } finally {
+                    zipFile.close()
+                }
+            } catch (Exception e) {
+                jarError = e.message
+            }
+            
+            if (!isValidJar) {
+                def preview = ""
+                if (tempFile.length() > 0) {
+                    def content = tempFile.text.take(500)
+                    preview = "\n\nFirst 500 chars of downloaded file:\n${content}"
+                }
+                tempFile.delete()
+                throw new IllegalStateException(
+                    "Downloaded file is not a valid JAR/ZIP file. " +
+                    "Size: ${tempFile.length()} bytes. " +
+                    "Error: ${jarError}. " +
+                    "Verify HYTALE_SERVER_JAR_DOWNLOAD_URL is a direct download link to the JAR file." +
+                    preview
+                )
+            }
+            
+            // Move temp file to final location
+            serverJar.delete()
+            tempFile.renameTo(serverJar)
+            
+            logger.lifecycle("Downloaded ${serverJar.name} successfully (${String.format('%.2f', serverJar.length() / (1024 * 1024))} MB)")
+            return
+        }
+        if (!composeFile.exists()) {
+            throw new IllegalStateException("Missing compose file at ${composeFile}")
+        }
+        logger.lifecycle("Launching docker compose to fetch HytaleServer.jar...")
+        logger.lifecycle("Container will require OAuth login - follow the logs below:")
+        runCommand(["docker", "compose", "-f", composeFile.absolutePath, "up", "-d"])
+        
+        // Follow logs and wait for boot message
+        def logsProcess = new ProcessBuilder("docker", "compose", "-f", composeFile.absolutePath, "logs", "-f")
+            .redirectErrorStream(true)
+            .start()
+        
+        def serverBooted = false
+        def logThread = Thread.start {
+            logsProcess.inputStream.eachLine { line ->
+                println(line)
+                if (line.contains("Hytale Server Booted!")) {
+                    serverBooted = true
+                }
+            }
+        }
+        
+        try {
+            // Wait for boot message with timeout
+            long deadline = System.currentTimeMillis() + (300 * 1000L)
+            while (!serverBooted && System.currentTimeMillis() < deadline) {
+                sleep(2000)
+            }
+            
+            if (!serverBooted) {
+                throw new IllegalStateException("Timed out waiting for 'Hytale Server Booted!' message")
+            }
+            
+            logger.lifecycle("Server booted successfully!")
+            
+            // Wait a bit more to ensure files are flushed
+            sleep(2000)
+            
+            if (!serverJar.exists()) {
+                throw new IllegalStateException("Server booted but ${serverJar} not found")
+            }
+            
+            logger.lifecycle("Found ${serverJar}")
+        } finally {
+            logsProcess.destroy()
+            logThread.join(1000)
+            runCommand(["docker", "compose", "-f", composeFile.absolutePath, "down"])
+        }
+    }
+}
+
+tasks.register("unpackAssets") {
+    group = "setup"
+    description = "Unzip Assets.zip into data/assets"
+    dependsOn "ensureDirectories"
+    mustRunAfter "ensureServerJar"
+    onlyIf { assetsZip.exists() }
+    doLast {
+        ant.unzip(src: assetsZip, dest: serverAssetsDir, overwrite: true)
+    }
+}
+
+
+
+// ============================================================================
+// Build Tasks
+// Tasks for building and packaging mod artifacts
+// ============================================================================
+
+tasks.register("assetsZip", Zip) {
+    group = "build"
+    description = "Zip assets/ into dist/assets.zip with flattened root"
+    dependsOn "ensureDirectories"
+    archiveBaseName.set(project(":plugin").tasks.named("jar").get().archiveBaseName.get())
+    archiveExtension.set("zip")
+    destinationDirectory.set(distDir)
+    zip64 = true
+    from(userAssetsDir) {
+        into("")
+        eachFile { FileCopyDetails details ->
+            // Exclude .gitkeep files (and their parent directories if empty)
+            if (details.name == ".gitkeep") {
+                details.exclude()
+            }
+        }
+    }
+    doFirst {
+        distDir.mkdirs()
+    }
+}
+
+tasks.register("copyPluginJarToDist", Copy) {
+    group = "build"
+    description = "Copy plugin jar into dist"
+    dependsOn ":plugin:jar"
+    from { project(":plugin").tasks.named("jar").flatMap { it.archiveFile } }
+    into(distDir)
+    doFirst {
+        distDir.mkdirs()
+    }
+}
+
+// ============================================================================
+// Distribution Tasks
+// Tasks for installing built artifacts to server mods directory
+// ============================================================================
+
+tasks.register("installToServerMods") {
+    group = "distribution"
+    description = "Copy jar and assets.zip into data/server/Server/mods"
+    dependsOn "ensureModsDir", "assetsZip", "copyPluginJarToDist"
+    doLast {
+        copy {
+            from(project(":plugin").tasks.named("jar").flatMap { it.archiveFile })
+            from(tasks.named("assetsZip").flatMap { it.archiveFile })
+            into(modsDir)
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        }
+    }
+}
+
+// ============================================================================
+// Utility Tasks
+// ============================================================================
+
+tasks.register("unpackJar") {
+    group = "setup"
+    description = "Unpack data/server/Server/HytaleServer.jar into data/unpacked"
+    dependsOn "ensureDirectories", "ensureServerJar"
+    onlyIf { !unpackedDir.exists() || unpackedDir.listFiles()?.length == 0 }
+    doLast {
+        if (unpackedDir.exists()) {
+            unpackedDir.deleteDir()
+        }
+        copy {
+            from(zipTree(serverJar))
+            into(unpackedDir)
+        }
+        logger.lifecycle("Unpacked ${serverJar} into ${unpackedDir}")
+    }
+}
+
+// ============================================================================
+// Application Lifecycle Tasks
+// Tasks for running and managing the Hytale server via Docker
+// ============================================================================
+
+tasks.register("composeDown") {
+    group = "application"
+    description = "Stop docker compose stack if running"
+    doLast {
+        if (!composeFile.exists()) {
+            throw new IllegalStateException("Missing compose file at ${composeFile}")
+        }
+        def psOutput = new ByteArrayOutputStream()
+        def psResult = runCommand(["docker", "compose", "-f", composeFile.absolutePath, "ps", "-q"], true, null, true)
+        psOutput.write(psResult.output.getBytes())
+        if (psResult.output.toString().trim()) {
+            logger.lifecycle("Stopping existing compose stack before rebuild...")
+            runCommand(["docker", "compose", "-f", composeFile.absolutePath, "down"])
+        } else {
+            logger.lifecycle("No running compose stack detected; nothing to stop.")
+        }
+    }
+}
+
+tasks.register("start") {
+    group = "application"
+    description = "Run build then start docker compose in foreground"
+    dependsOn "composeDown", "build"
+    doLast {
+        if (!composeFile.exists()) {
+            throw new IllegalStateException("Missing compose file at ${composeFile}")
+        }
+        logger.lifecycle("Starting docker compose in foreground (logs attached)...")
+        runCommand(["docker", "compose", "-f", composeFile.absolutePath, "up"])
+    }
+}
+
+// ============================================================================
+// Gradle Lifecycle Customization
+// Modify standard Gradle build lifecycle tasks
+// ============================================================================
+
+tasks.named("assemble") {
+    dependsOn "copyPluginJarToDist", "assetsZip"
+}
+
+tasks.named("build") {
+    dependsOn "installToServerMods"
+    mustRunAfter "composeDown"
+}
+
+// ============================================================================
+// Error Reporting Hook
+// Provide helpful error context on build failure
+// ============================================================================
