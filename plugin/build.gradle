@@ -92,10 +92,8 @@ processResources {
     filesMatching('plugin.properties') {
         expand(version: project.version)
     }
+    // Process manifest.json without modifications to support custom manifest structure
     filesMatching('manifest.json') {
-        expand(version: project.version)
-        filter { line ->
-            line.replace('"GRADLE_INJECT_AUTHORS"', authorsJson.get())
-        }
+        // Copy manifest.json as-is to support custom manifests
     }
 }
