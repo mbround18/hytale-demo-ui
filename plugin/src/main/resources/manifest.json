@@ -1,9 +1,7 @@
 {
-  "Group": "com.example",
-  "Name": "HelloWorld",
-  "Version": "${version}",
-  "Authors": "GRADLE_INJECT_AUTHORS",
-  "Website": "https://example.com",
-  "Main": "com.example.hytale.helloworld.HelloWorldPlugin",
-  "ServerVersion": "*"
+  "Group": "MBRound18",
+  "Name": "SharedInterfaces",
+  "Version": "0.1.0",
+  "Main": "MBRound18.hytale..interfaces.DemoPlugin",
+  "IncludesAssetPack": true
 }
