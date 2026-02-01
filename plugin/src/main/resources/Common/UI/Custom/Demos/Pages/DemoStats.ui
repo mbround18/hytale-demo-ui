@@ -1,0 +1,23 @@
+$L = "../../Macros/Layout.ui";
+$S = "../../Macros/Stats.ui";
+$G = "../../Macros/Grid.ui";
+
+Group #DemoStats {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 560;
+    @Height = 240;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Stats"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $G.@TileRow #StatsRow {
+      $S.@StatCard #StatA { @Label = "Health"; @Value = "100"; }
+      $S.@StatCard #StatB { @Label = "Armor"; @Value = "42"; }
+      $S.@StatCard #StatC { @Label = "Mana"; @Value = "18"; }
+    }
+  }
+}

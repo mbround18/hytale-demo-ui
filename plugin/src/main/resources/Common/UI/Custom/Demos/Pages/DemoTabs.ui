@@ -1,0 +1,22 @@
+$L = "../../Macros/Layout.ui";
+$T = "../../Macros/Tabs.ui";
+
+Group #DemoTabs {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 420;
+    @Height = 200;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Tabs"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $T.@TabBar #Tabs {
+      $T.@TabButton #TabA { @Text = "Overview"; @Selected = true; }
+      $T.@TabButton #TabB { @Text = "Details"; }
+      $T.@TabButton #TabC { @Text = "Settings"; }
+    }
+  }
+}

@@ -1,0 +1,24 @@
+$L = "../../Macros/Layout.ui";
+$U = "../../Macros/Utility.ui";
+$B = "../../Macros/Toolbar.ui";
+$Tt = "../../Macros/Toast.ui";
+
+Group #DemoHudWidgetStrip {
+  Anchor: (Bottom: 40, Left: 40, Width: 360, Height: 120);
+  LayoutMode: Top;
+  Background: #1f2a36(0.85);
+  Padding: (Full: 10);
+
+  $L.@HeaderBar #Header { @Text = "HUD Widgets"; }
+  $L.@Spacer #Space1 { @Height = 6; }
+
+  $B.@Toolbar #Toolbar {
+    Group #Left { $B.@IconButton #A { @Icon = #c6d5e5; } }
+    Group #Right { $B.@IconButton #B { @Icon = #5fc4b6; } }
+  }
+
+  $L.@Spacer #Space2 { @Height = 6; }
+  $U.@Badge #Badge { @Text = "LIVE"; }
+  $L.@Spacer #Space3 { @Height = 6; }
+  $Tt.@Toast #Toast { @Text = "Connected"; }
+}

@@ -1,0 +1,15 @@
+// Toast macros
+
+// Usage: $Tt.@Toast #Toast { @Text = "Saved"; }
+@Toast = Group {
+  @Text = "Saved";
+  @Width = 220;
+  @Height = 36;
+  @Background = #2a3a4d;
+  @Style = LabelStyle(FontSize: 13, TextColor: #e3eef9, RenderBold: true, HorizontalAlignment: Center, VerticalAlignment: Center);
+  Anchor: (Width: @Width, Height: @Height);
+  Background: @Background;
+  LayoutMode: Center;
+
+  Label #Message { Text: @Text; Style: @Style; Anchor: (Height: @Height); }
+};

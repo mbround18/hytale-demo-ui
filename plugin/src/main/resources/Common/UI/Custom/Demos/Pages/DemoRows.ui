@@ -1,0 +1,27 @@
+$L = "../../Macros/Layout.ui";
+$R = "../../Macros/Rows.ui";
+
+Group #DemoRows {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 560;
+    @Height = 300;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Rows"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $L.@Section #SectionA {
+      @Title = "Row Samples";
+      $R.@AvatarRow #AvatarRow { @Name = "PlayerOne"; @Status = "Online"; }
+      $L.@Spacer #Space2 { @Height = 6; }
+      $R.@InfoRow #InfoRow { @Label = "Region"; @Value = "EU"; }
+      $L.@Spacer #Space3 { @Height = 6; }
+      $R.@KeyValueRow #KeyValue { @Key = "Ping"; @Value = "42"; }
+      $L.@Spacer #Space4 { @Height = 6; }
+      $R.@ToggleRow #Toggle { @Text = "Allow Invites"; }
+    }
+  }
+}

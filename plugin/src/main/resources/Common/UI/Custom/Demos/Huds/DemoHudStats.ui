@@ -1,0 +1,24 @@
+$L = "../../Macros/Layout.ui";
+$S = "../../Macros/Stats.ui";
+$R = "../../Macros/Rows.ui";
+
+Group #DemoHudStats {
+  Anchor: (Bottom: 200, Left: 40, Width: 320, Height: 150);
+  LayoutMode: Top;
+  Background: #1f2a36(0.85);
+  Padding: (Full: 10);
+
+  $L.@HeaderBar #Header { @Text = "Vitals"; }
+  $L.@Spacer #Space1 { @Height = 6; }
+
+  Group #StatsRow {
+    LayoutMode: Left;
+
+    $S.@StatCard #Health { @Label = "Health"; @Value = "100"; @Width = 96; @Height = 56; }
+    $S.@StatCard #Armor { @Label = "Armor"; @Value = "42"; @Width = 96; @Height = 56; }
+    $S.@StatCard #Mana { @Label = "Mana"; @Value = "18"; @Width = 96; @Height = 56; }
+  }
+
+  $L.@Spacer #Space2 { @Height = 6; }
+  $R.@InfoRow #Zone { @Label = "Zone"; @Value = "Sanctum"; }
+}

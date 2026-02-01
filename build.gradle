@@ -13,10 +13,8 @@ ext {
     dataDir = file("data")
     serverDir = file("data/server")
     unpackedDir = file("data/unpacked")
-    distDir = file("dist")
     
     // Assets
-    userAssetsDir = file("assets")              // User-authored assets for packing
     serverAssetsDir = file("data/assets")       // Extracted vanilla assets from server
     
     // Server files
@@ -101,7 +99,7 @@ tasks.register("setup") {
 tasks.register("ensureDirectories") {
     group = "setup"
     description = "Ensure data directories exist with uid:gid 1000:1000"
-    def dirs = [serverDir, userAssetsDir, serverAssetsDir, unpackedDir]
+    def dirs = [serverDir, serverAssetsDir, unpackedDir]
     def isCI = System.getenv("CI")
     doLast {
         dirs.each { dir ->
@@ -290,39 +288,6 @@ tasks.register("unpackAssets") {
 // Tasks for building and packaging mod artifacts
 // ============================================================================
 
-tasks.register("assetsZip", Zip) {
-    group = "build"
-    description = "Zip assets/ into dist/assets.zip with flattened root"
-    dependsOn "ensureDirectories"
-    archiveBaseName.set(project(":plugin").tasks.named("jar").get().archiveBaseName.get())
-    archiveExtension.set("zip")
-    destinationDirectory.set(distDir)
-    zip64 = true
-    from(userAssetsDir) {
-        into("")
-        eachFile { FileCopyDetails details ->
-            // Exclude .gitkeep files (and their parent directories if empty)
-            if (details.name == ".gitkeep") {
-                details.exclude()
-            }
-        }
-    }
-    doFirst {
-        distDir.mkdirs()
-    }
-}
-
-tasks.register("copyPluginJarToDist", Copy) {
-    group = "build"
-    description = "Copy plugin jar into dist"
-    dependsOn ":plugin:jar"
-    from { project(":plugin").tasks.named("jar").flatMap { it.archiveFile } }
-    into(distDir)
-    doFirst {
-        distDir.mkdirs()
-    }
-}
-
 // ============================================================================
 // Distribution Tasks
 // Tasks for installing built artifacts to server mods directory
@@ -330,12 +295,11 @@ tasks.register("copyPluginJarToDist", Copy) {
 
 tasks.register("installToServerMods") {
     group = "distribution"
-    description = "Copy jar and assets.zip into data/server/Server/mods"
-    dependsOn "ensureModsDir", "assetsZip", "copyPluginJarToDist"
+    description = "Copy jar into data/server/Server/mods"
+    dependsOn "ensureModsDir", ":plugin:jar"
     doLast {
         copy {
             from(project(":plugin").tasks.named("jar").flatMap { it.archiveFile })
-            from(tasks.named("assetsZip").flatMap { it.archiveFile })
             into(modsDir)
             duplicatesStrategy = DuplicatesStrategy.INCLUDE
         }
@@ -389,8 +353,8 @@ tasks.register("composeDown") {
 
 tasks.register("start") {
     group = "application"
-    description = "Run build then start docker compose in foreground"
-    dependsOn "composeDown", "build"
+    description = "Install plugin jar then start docker compose in foreground"
+    dependsOn "composeDown", "installToServerMods"
     doLast {
         if (!composeFile.exists()) {
             throw new IllegalStateException("Missing compose file at ${composeFile}")
@@ -406,10 +370,11 @@ tasks.register("start") {
 // ============================================================================
 
 tasks.named("assemble") {
-    dependsOn "copyPluginJarToDist", "assetsZip"
+    dependsOn ":plugin:jar"
 }
 
 tasks.named("build") {
+    dependsOn ":plugin:build"
     dependsOn "installToServerMods"
     mustRunAfter "composeDown"
 }

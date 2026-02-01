@@ -1,0 +1,36 @@
+// Input macros
+$C = "../Common.ui";
+
+// Usage: $I.@SearchField #Search { @Placeholder = "Search..."; }
+@SearchField = Group {
+  @Placeholder = "Search...";
+  @MinWidth = 220;
+  LayoutMode: Left;
+
+  $C.@TextField #SearchInput {
+    Anchor: (MinWidth: @MinWidth);
+    PlaceholderText: @Placeholder;
+  }
+};
+
+// Usage: $I.@LabeledTextField #Field { @Label = "Name"; }
+@LabeledTextField = Group {
+  @Label = "Label";
+  @LabelStyle = LabelStyle(FontSize: 13, TextColor: #9fb3c6);
+  @MinWidth = 220;
+  LayoutMode: Top;
+
+  Label #FieldLabel { Text: @Label; Style: @LabelStyle; Anchor: (Height: 18); }
+  $C.@TextField #Input { Anchor: (MinWidth: @MinWidth); }
+};
+
+// Usage: $I.@LabeledNumberField #Field { @Label = "Count"; }
+@LabeledNumberField = Group {
+  @Label = "Label";
+  @LabelStyle = LabelStyle(FontSize: 13, TextColor: #9fb3c6);
+  @MinWidth = 180;
+  LayoutMode: Top;
+
+  Label #FieldLabel { Text: @Label; Style: @LabelStyle; Anchor: (Height: 18); }
+  $C.@NumberField #Input { Anchor: (MinWidth: @MinWidth); }
+};

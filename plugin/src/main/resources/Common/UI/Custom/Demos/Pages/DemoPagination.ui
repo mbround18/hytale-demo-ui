@@ -1,0 +1,18 @@
+$L = "../../Macros/Layout.ui";
+$P = "../../Macros/Pagination.ui";
+
+Group #DemoPagination {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 420;
+    @Height = 200;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Pagination"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $P.@Pagination #Pager { @Page = "3"; @Total = "12"; }
+  }
+}

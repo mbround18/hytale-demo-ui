@@ -1,0 +1,28 @@
+$L = "../../Macros/Layout.ui";
+$U = "../../Macros/Utility.ui";
+
+Group #DemoUtility {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 560;
+    @Height = 360;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Utility"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $L.@Section #SectionA {
+      @Title = "Utility Widgets";
+
+      $U.@IconLabelRow #IconLabel { @Text = "Work in progress"; }
+      $L.@Spacer #Space2 { @Height = 6; }
+      $U.@Badge #Badge { @Text = "NEW"; }
+      $L.@Spacer #Space3 { @Height = 6; }
+      $L.@Divider #Divider {}
+      $L.@Spacer #Space4 { @Height = 6; }
+      $U.@EmptyState #Empty { @Title = "No Results"; @Body = "Try another search."; }
+    }
+  }
+}

@@ -1,0 +1,33 @@
+// Tab macros
+
+// Usage: $T.@TabBar #Tabs { }
+@TabBar = Group {
+  @Height = 28;
+  @Gap = 6;
+  Anchor: (Height: @Height);
+  LayoutMode: Left;
+};
+
+// Usage: $T.@TabButton #Tab { @Text = "Tab"; @Selected = false; }
+@TabButton = Group {
+  @Text = "Tab";
+  @Selected = false;
+  LayoutMode: Top;
+
+  TextButton #Button {
+    Text: @Text;
+    Style: TextButtonStyle(
+      Default: (Background: #243347, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5, RenderUppercase: true)),
+      Hovered: (Background: #2a3b52, LabelStyle: LabelStyle(FontSize: 12, TextColor: #e3eef9, RenderUppercase: true)),
+      Pressed: (Background: #1f2c3e, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5, RenderUppercase: true))
+    );
+    Anchor: (Height: 24);
+    Padding: (Left: 10, Right: 10);
+  }
+
+  Group #Selected {
+    Visible: @Selected;
+    Anchor: (Bottom: 0, Height: 2, Full: 0);
+    Background: #5fc4b6;
+  }
+};

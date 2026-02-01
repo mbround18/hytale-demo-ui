@@ -1,0 +1,26 @@
+$L = "../../Macros/Layout.ui";
+$R = "../../Macros/Rows.ui";
+$U = "../../Macros/Utility.ui";
+$B = "../../Macros/Toolbar.ui";
+
+Group #DemoHudPartyStatus {
+  Anchor: (Top: 40, Left: 40, Width: 320, Height: 180);
+  LayoutMode: Top;
+  Background: #1f2a36(0.85);
+  Padding: (Full: 10);
+
+  $L.@HeaderBar #Header { @Text = "Party"; }
+  $L.@Spacer #Space1 { @Height = 6; }
+
+  $R.@AvatarRow #Leader { @Name = "MBRound18"; @Status = "Leader"; }
+  $L.@Spacer #Space2 { @Height = 6; }
+  $R.@InfoRow #Members { @Label = "Members"; @Value = "2/4"; }
+  $L.@Spacer #Space3 { @Height = 6; }
+  $U.@Badge #Badge { @Text = "READY"; }
+  $L.@Spacer #Space4 { @Height = 6; }
+
+  $B.@Toolbar #Toolbar {
+    Group #Left { $B.@IconButton #Invite { @Icon = #5fc4b6; } }
+    Group #Right { $B.@IconButton #Leave { @Icon = #c6d5e5; } }
+  }
+}

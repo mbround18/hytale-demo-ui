@@ -2,6 +2,6 @@
   "Group": "MBRound18",
   "Name": "SharedInterfaces",
   "Version": "0.1.0",
-  "Main": "MBRound18.hytale..interfaces.DemoPlugin",
+  "Main": "MBRound18.hytale.shared.interfaces.InterfacesPlugin",
   "IncludesAssetPack": true
 }

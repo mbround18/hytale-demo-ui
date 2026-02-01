@@ -1,0 +1,28 @@
+// Toolbar macros
+
+// Usage: $B.@Toolbar #Toolbar { }
+@Toolbar = Group {
+  @Height = 32;
+  LayoutMode: Left;
+  Anchor: (Height: @Height);
+
+  Group #Left { LayoutMode: Left; FlexWeight: 1; }
+  Group #Right { LayoutMode: Right; FlexWeight: 1; }
+};
+
+// Usage: $B.@IconButton #Btn { @Icon = #ffffff; }
+@IconButton = Button {
+  @Size = 28;
+  @Icon = #ffffff;
+  @Background = #243347;
+  @Hovered = #2a3b52;
+  @Pressed = #1f2c3e;
+
+  Style: ButtonStyle(
+    Default: (Background: @Background),
+    Hovered: (Background: @Hovered),
+    Pressed: (Background: @Pressed)
+  );
+  Anchor: (Width: @Size, Height: @Size);
+  Background: @Icon;
+};

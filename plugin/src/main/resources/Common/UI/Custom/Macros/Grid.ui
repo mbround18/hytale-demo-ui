@@ -1,0 +1,29 @@
+// Grid macros
+
+// Usage: $G.@TileGrid #Grid { }
+@TileGrid = Group {
+  @Gap = 6;
+  LayoutMode: Top;
+};
+
+// Usage: $G.@TileRow #Row { }
+@TileRow = Group {
+  @Gap = 6;
+  LayoutMode: Left;
+  Padding: (Bottom: @Gap);
+};
+
+// Usage: $G.@Tile #Tile { @Text = "Item"; }
+@Tile = Group {
+  @Size = 56;
+  @Text = "";
+  @Background = #223244;
+  Anchor: (Width: @Size, Height: @Size);
+  Background: @Background;
+
+  Label #Caption {
+    Text: @Text;
+    Anchor: (Bottom: 2, Full: 0);
+    Style: (FontSize: 11, TextColor: #c6d5e5, HorizontalAlignment: Center);
+  }
+};

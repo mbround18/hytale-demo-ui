@@ -1,0 +1,35 @@
+$L = "../../Macros/Layout.ui";
+$G = "../../Macros/Grid.ui";
+
+Group #DemoGrid {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 560;
+    @Height = 360;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Grid"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $L.@Section #SectionA {
+      @Title = "Tiles";
+
+      $G.@TileGrid #Grid {
+        $G.@TileRow #RowA {
+          $G.@Tile #Tile1 { @Text = "A"; }
+          $G.@Tile #Tile2 { @Text = "B"; }
+          $G.@Tile #Tile3 { @Text = "C"; }
+          $G.@Tile #Tile4 { @Text = "D"; }
+        }
+        $G.@TileRow #RowB {
+          $G.@Tile #Tile5 { @Text = "E"; }
+          $G.@Tile #Tile6 { @Text = "F"; }
+          $G.@Tile #Tile7 { @Text = "G"; }
+          $G.@Tile #Tile8 { @Text = "H"; }
+        }
+      }
+    }
+  }
+}

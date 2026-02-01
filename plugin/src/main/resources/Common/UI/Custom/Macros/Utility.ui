@@ -1,0 +1,56 @@
+// Utility macros
+
+// Usage: $U.@EmptyState #Empty { @Title = "Nothing here"; @Body = "Try adding items"; }
+@EmptyState = Group {
+  @Title = "Empty";
+  @Body = "No items to show.";
+  @TitleStyle = LabelStyle(FontSize: 16, TextColor: #e3eef9, RenderBold: true, HorizontalAlignment: Center);
+  @BodyStyle = LabelStyle(FontSize: 13, TextColor: #9fb3c6, HorizontalAlignment: Center);
+  LayoutMode: Top;
+  Anchor: (Height: 80);
+
+  Label #Title { Text: @Title; Style: @TitleStyle; Anchor: (Height: 26); }
+  Label #Body { Text: @Body; Style: @BodyStyle; Anchor: (Height: 20); }
+};
+
+// Usage: $U.@Badge #Badge { @Text = "NEW"; }
+@Badge = Group {
+  @Text = "NEW";
+  @Style = LabelStyle(FontSize: 11, TextColor: #ffffff, RenderBold: true, HorizontalAlignment: Center);
+  @Background = #4fb6a7;
+  Anchor: (Height: 18);
+  Background: @Background;
+  Padding: (Left: 8, Right: 8);
+
+  Label #BadgeText { Text: @Text; Style: @Style; Anchor: (Height: 18); }
+};
+
+// Usage: $U.@IconLabelRow #Row { @Icon = #000000(0); @Text = "Label"; }
+@IconLabelRow = Group {
+  @Icon = #000000(0);
+  @Text = "Label";
+  @Style = LabelStyle(FontSize: 13, TextColor: #c6d5e5);
+  LayoutMode: Left;
+
+  Group #Icon {
+    Anchor: (Width: 18, Height: 18, Right: 8);
+    Background: @Icon;
+  }
+
+  Label #Text { Text: @Text; Style: @Style; }
+};
+
+// Usage: $U.@PillButton #Pill { @Text = "Tag"; }
+@PillButton = TextButton {
+  @Text = "Tag";
+  @Style = TextButtonStyle(
+    Default: (Background: #2a3a4d, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5)),
+    Hovered: (Background: #32465e, LabelStyle: LabelStyle(FontSize: 12, TextColor: #e3eef9)),
+    Pressed: (Background: #243349, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5))
+  );
+
+  Text: @Text;
+  Style: @Style;
+  Padding: (Left: 10, Right: 10);
+  Anchor: (Height: 22);
+};

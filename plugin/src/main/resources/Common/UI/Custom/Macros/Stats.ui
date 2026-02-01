@@ -1,0 +1,19 @@
+// Stats macros
+
+// Usage: $S.@StatCard #Card { @Label = "Health"; @Value = "100"; }
+@StatCard = Group {
+  @Label = "Label";
+  @Value = "0";
+  @Width = 120;
+  @Height = 64;
+  @Background = #223244;
+  @LabelStyle = LabelStyle(FontSize: 11, TextColor: #9fb3c6, RenderUppercase: true);
+  @ValueStyle = LabelStyle(FontSize: 18, TextColor: #e3eef9, RenderBold: true);
+  Anchor: (Width: @Width, Height: @Height);
+  Background: @Background;
+  LayoutMode: Top;
+  Padding: (Full: 8);
+
+  Label #Value { Text: @Value; Style: @ValueStyle; Anchor: (Height: 24); }
+  Label #Label { Text: @Label; Style: @LabelStyle; Anchor: (Height: 18); }
+};

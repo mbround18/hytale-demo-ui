@@ -1,0 +1,31 @@
+// Modal macros
+
+// Usage: $M.@ModalShell #Modal { @Width = 420; @Height = 260; }
+@ModalShell = Group {
+  @Width = 420;
+  @Height = 260;
+  @Background = #1f2a36;
+  @Padding = (Full: 12);
+  Anchor: (Width: @Width, Height: @Height);
+  Background: @Background;
+  Padding: @Padding;
+  LayoutMode: Top;
+};
+
+// Usage: $M.@ModalHeader #Header { @Title = "Title"; }
+@ModalHeader = Group {
+  @Title = "Title";
+  @Height = 32;
+  @Style = LabelStyle(FontSize: 16, TextColor: #e3eef9, RenderBold: true);
+  Anchor: (Height: @Height);
+  LayoutMode: Left;
+
+  Label #Title { Text: @Title; Style: @Style; Anchor: (Height: @Height); }
+};
+
+// Usage: $M.@ModalFooter #Footer { }
+@ModalFooter = Group {
+  @Gap = 8;
+  Anchor: (Height: 36);
+  LayoutMode: Right;
+};

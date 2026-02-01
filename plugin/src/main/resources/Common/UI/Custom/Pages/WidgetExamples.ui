@@ -1,0 +1,169 @@
+$L = "../Macros/Layout.ui";
+$I = "../Macros/Inputs.ui";
+$R = "../Macros/Rows.ui";
+$U = "../Macros/Utility.ui";
+$T = "../Macros/Tabs.ui";
+$G = "../Macros/Grid.ui";
+$M = "../Macros/Modal.ui";
+$B = "../Macros/Toolbar.ui";
+$S = "../Macros/Stats.ui";
+$Tt = "../Macros/Toast.ui";
+$P = "../Macros/Pagination.ui";
+$C = "../Common.ui";
+
+Group #WidgetExamples {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 840;
+    @Height = 800;
+
+    $L.@HeaderBar #Header { @Text = "Widget Examples"; }
+    $L.@Spacer #Space1 { @Height = 6; }
+
+    $T.@TabBar #Tabs {
+      $T.@TabButton #TabA { @Text = "Overview"; @Selected = true; }
+      $T.@TabButton #TabB { @Text = "Details"; }
+      $T.@TabButton #TabC { @Text = "Settings"; }
+    }
+
+    $L.@Spacer #Space2 { @Height = 10; }
+
+    $L.@Section #SectionA {
+      @Title = "Inputs";
+
+      $I.@SearchField #Search { @Placeholder = "Search..."; }
+      $L.@Spacer #Space3 { @Height = 8; }
+
+      $L.@TwoColumn #Columns {
+        $I.@LabeledTextField #NameField { @Label = "Name"; }
+        $I.@LabeledNumberField #CountField { @Label = "Count"; }
+      }
+    }
+
+    $L.@Spacer #Space4 { @Height = 10; }
+
+    $L.@Section #SectionB {
+      @Title = "Rows";
+      $R.@AvatarRow #AvatarRow { @Name = "PlayerOne"; @Status = "Online"; }
+      $L.@Spacer #Space5 { @Height = 6; }
+      $R.@InfoRow #InfoRow { @Label = "Region"; @Value = "EU"; }
+      $L.@Spacer #Space6 { @Height = 6; }
+      $R.@KeyValueRow #KeyValue { @Key = "Ping"; @Value = "42"; }
+      $L.@Spacer #Space7 { @Height = 6; }
+      $R.@ToggleRow #Toggle { @Text = "Allow Invites"; }
+    }
+
+    $L.@Spacer #Space8 { @Height = 10; }
+
+    $L.@Section #SectionC {
+      @Title = "Utility";
+
+      $U.@IconLabelRow #IconLabel { @Text = "Work in progress"; }
+      $L.@Spacer #Space9 { @Height = 6; }
+      $U.@Badge #Badge { @Text = "NEW"; }
+      $L.@Spacer #Space10 { @Height = 6; }
+      $L.@Divider #Divider {}
+      $L.@Spacer #Space11 { @Height = 6; }
+      $U.@EmptyState #Empty { @Title = "No Results"; @Body = "Try another search."; }
+    }
+
+    $L.@Spacer #Space12 { @Height = 10; }
+
+    $L.@Section #SectionD {
+      @Title = "Grid";
+
+      $G.@TileGrid #Grid {
+        $G.@TileRow #RowA {
+          $G.@Tile #Tile1 { @Text = "A"; }
+          $G.@Tile #Tile2 { @Text = "B"; }
+          $G.@Tile #Tile3 { @Text = "C"; }
+          $G.@Tile #Tile4 { @Text = "D"; }
+        }
+        $G.@TileRow #RowB {
+          $G.@Tile #Tile5 { @Text = "E"; }
+          $G.@Tile #Tile6 { @Text = "F"; }
+          $G.@Tile #Tile7 { @Text = "G"; }
+          $G.@Tile #Tile8 { @Text = "H"; }
+        }
+      }
+    }
+
+    $L.@Spacer #Space13 { @Height = 10; }
+
+    $L.@Section #SectionE {
+      @Title = "Modal";
+
+      $M.@ModalShell #Modal {
+        @Width = 300;
+        @Height = 150;
+
+        $M.@ModalHeader #ModalHeader { @Title = "Confirm"; }
+        $L.@Spacer #ModalSpace { @Height = 6; }
+
+        Label #ModalBody { Text: "Proceed with action?"; Style: (TextColor: #c6d5e5); }
+
+        $L.@Spacer #ModalSpace2 { @Height = 8; }
+
+        $M.@ModalFooter #ModalFooter {
+          $C.@TextButton #Ok { @Text = "OK"; }
+          $C.@TextButton #Cancel { @Text = "Cancel"; }
+        }
+      }
+    }
+
+    $L.@Spacer #Space14 { @Height = 10; }
+
+    $L.@Section #SectionF {
+      @Title = "Toolbar";
+
+      $B.@Toolbar #Toolbar {
+        Group #Left {
+          $B.@IconButton #Filter { @Icon = #c6d5e5; }
+          $B.@IconButton #Sort { @Icon = #c6d5e5; }
+        }
+        Group #Right {
+          $B.@IconButton #Refresh { @Icon = #5fc4b6; }
+        }
+      }
+    }
+
+    $L.@Spacer #Space15 { @Height = 10; }
+
+    $L.@Section #SectionG {
+      @Title = "Stats";
+
+      $G.@TileRow #StatsRow {
+        $S.@StatCard #StatA { @Label = "Health"; @Value = "100"; }
+        $S.@StatCard #StatB { @Label = "Armor"; @Value = "42"; }
+        $S.@StatCard #StatC { @Label = "Mana"; @Value = "18"; }
+      }
+    }
+
+    $L.@Spacer #Space16 { @Height = 10; }
+
+    $L.@Section #SectionH {
+      @Title = "Toast";
+
+      $Tt.@Toast #Toast { @Text = "Saved"; }
+    }
+
+    $L.@Spacer #Space17 { @Height = 10; }
+
+    $L.@Section #SectionI {
+      @Title = "Pagination";
+
+      $P.@Pagination #Pager { @Page = "3"; @Total = "12"; }
+    }
+
+    $L.@Spacer #Space18 { @Height = 10; }
+
+    $L.@ButtonRow #Actions {
+      $C.@TextButton #Primary { @Text = "Confirm"; }
+      $C.@TextButton #Secondary { @Text = "Cancel"; }
+      $U.@PillButton #Tag { @Text = "Tag"; }
+    }
+  }
+}

@@ -1,0 +1,31 @@
+$L = "../../Macros/Layout.ui";
+$I = "../../Macros/Inputs.ui";
+
+Group #DemoInputs {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 560;
+    @Height = 360;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Inputs"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $L.@Section #SectionA {
+      @Title = "Search";
+      $I.@SearchField #Search { @Placeholder = "Search..."; }
+    }
+
+    $L.@Spacer #Space2 { @Height = 10; }
+
+    $L.@Section #SectionB {
+      @Title = "Fields";
+      $L.@TwoColumn #Columns {
+        $I.@LabeledTextField #NameField { @Label = "Name"; }
+        $I.@LabeledNumberField #CountField { @Label = "Count"; }
+      }
+    }
+  }
+}

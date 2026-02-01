@@ -1,0 +1,61 @@
+// Row macros
+$C = "../Common.ui";
+
+// Usage: $R.@ToggleRow #Row { @Text = "Enabled"; }
+@ToggleRow = Group {
+  @Text = "Toggle";
+  LayoutMode: Left;
+
+  $C.@CheckBox #ToggleBox {}
+  Label #ToggleLabel {
+    Text: @Text;
+    Anchor: (Left: 8);
+    Style: (FontSize: 13, TextColor: #c6d5e5);
+  }
+};
+
+// Usage: $R.@InfoRow #Row { @Label = "Status"; @Value = "Online"; }
+@InfoRow = Group {
+  @Label = "Label";
+  @Value = "Value";
+  @LabelStyle = LabelStyle(FontSize: 13, TextColor: #9fb3c6);
+  @ValueStyle = LabelStyle(FontSize: 13, TextColor: #e3eef9, RenderBold: true);
+  LayoutMode: Left;
+
+  Label #InfoLabel { Text: @Label; Style: @LabelStyle; Anchor: (Right: 10); }
+  Label #InfoValue { Text: @Value; Style: @ValueStyle; }
+};
+
+// Usage: $R.@KeyValueRow #Row { @Key = "HP"; @Value = "100"; }
+@KeyValueRow = Group {
+  @Key = "Key";
+  @Value = "Value";
+  @KeyStyle = LabelStyle(FontSize: 12, TextColor: #9fb3c6);
+  @ValueStyle = LabelStyle(FontSize: 12, TextColor: #e3eef9, RenderBold: true);
+  LayoutMode: Left;
+
+  Label #KeyLabel { Text: @Key; Style: @KeyStyle; Anchor: (Right: 10); }
+  Label #ValueLabel { Text: @Value; Style: @ValueStyle; }
+};
+
+// Usage: $R.@AvatarRow #Row { @Name = "Player"; @Status = "Online"; }
+@AvatarRow = Group {
+  @Name = "Player";
+  @Status = "Online";
+  @NameStyle = LabelStyle(FontSize: 15, TextColor: #e3eef9, RenderBold: true);
+  @StatusStyle = LabelStyle(FontSize: 12, TextColor: #9fb3c6);
+  LayoutMode: Left;
+
+  Group #Avatar {
+    Anchor: (Width: 48, Height: 48);
+    Background: #223244;
+  }
+
+  Group #Info {
+    LayoutMode: Top;
+    Anchor: (Left: 10);
+
+    Label #Name { Text: @Name; Style: @NameStyle; Anchor: (Height: 18); }
+    Label #Status { Text: @Status; Style: @StatusStyle; Anchor: (Height: 16); }
+  }
+};

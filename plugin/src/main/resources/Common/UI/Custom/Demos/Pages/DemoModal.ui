@@ -1,0 +1,26 @@
+$L = "../../Macros/Layout.ui";
+$M = "../../Macros/Modal.ui";
+$C = "../../Common.ui";
+
+Group #DemoModal {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $M.@ModalShell #Modal {
+    @Width = 300;
+    @Height = 150;
+
+    $M.@ModalHeader #ModalHeader { @Title = "Confirm"; }
+    $L.@Spacer #ModalSpace { @Height = 6; }
+
+    Label #ModalBody { Text: "Proceed with action?"; Style: (TextColor: #c6d5e5); }
+
+    $L.@Spacer #ModalSpace2 { @Height = 8; }
+
+    $M.@ModalFooter #ModalFooter {
+      $C.@TextButton #Ok { @Text = "OK"; }
+      $C.@TextButton #Cancel { @Text = "Cancel"; }
+    }
+  }
+}

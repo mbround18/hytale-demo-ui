@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group = 'com.example.hytale'
+group = 'MBRound18.hytale'
 version = '0.1.0'
 
 repositories {
@@ -28,13 +28,14 @@ tasks.withType(JavaCompile).configureEach {
 }
 
 jar {
-    archiveBaseName.set("HelloWorld")
+    archiveBaseName.set("SharedInterfaces")
+    destinationDirectory.set(file("${rootProject.projectDir}/dist"))
     manifest {
         attributes(
-                'Plugin-Main': 'com.example.hytale.helloworld.HelloWorldPlugin',
-                'Plugin-Name': 'HelloWorld',
+                'Plugin-Main': 'MBRound18.hytale.shared.interfaces.InterfacesPlugin',
+                'Plugin-Name': 'SharedInterfaces',
                 'Plugin-Version': project.version,
-                'Implementation-Title': 'HelloWorld',
+                'Implementation-Title': 'SharedInterfaces',
                 'Implementation-Version': project.version
         )
     }

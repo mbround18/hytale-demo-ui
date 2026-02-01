@@ -1,0 +1,31 @@
+// Pagination macros
+
+// Usage: $P.@Pagination #Pager { @Page = "1"; @Total = "10"; }
+@Pagination = Group {
+  @Page = "1";
+  @Total = "10";
+  @LabelStyle = LabelStyle(FontSize: 12, TextColor: #c6d5e5);
+  LayoutMode: Left;
+
+  TextButton #Prev {
+    Text: "<";
+    Style: TextButtonStyle(
+      Default: (Background: #243347, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5)),
+      Hovered: (Background: #2a3b52, LabelStyle: LabelStyle(FontSize: 12, TextColor: #e3eef9)),
+      Pressed: (Background: #1f2c3e, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5))
+    );
+    Anchor: (Height: 24, Width: 24, Right: 6);
+  }
+
+  Label #PageLabel { Text: @Page + "/" + @Total; Style: @LabelStyle; Anchor: (Height: 24, Right: 6); }
+
+  TextButton #Next {
+    Text: ">";
+    Style: TextButtonStyle(
+      Default: (Background: #243347, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5)),
+      Hovered: (Background: #2a3b52, LabelStyle: LabelStyle(FontSize: 12, TextColor: #e3eef9)),
+      Pressed: (Background: #1f2c3e, LabelStyle: LabelStyle(FontSize: 12, TextColor: #c6d5e5))
+    );
+    Anchor: (Height: 24, Width: 24);
+  }
+};

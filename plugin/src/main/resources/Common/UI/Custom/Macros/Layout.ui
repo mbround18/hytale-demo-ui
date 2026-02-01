@@ -1,0 +1,94 @@
+// Layout macros
+$C = "../Common.ui";
+
+// Usage: $L.@PageFrame #Root { @Width = 700; @Height = 500; }
+@PageFrame = Group {
+  @Width = 700;
+  @Height = 500;
+  @Padding = (Full: 12);
+  @Background = #1f2a36;
+  Anchor: (Width: @Width, Height: @Height);
+  Background: @Background;
+  Padding: @Padding;
+  LayoutMode: Top;
+};
+
+// Usage: $L.@Panel #MainPanel { @Background = #223244; }
+@Panel = Group {
+  @Padding = (Full: 12);
+  @Background = #223244;
+  Background: @Background;
+  Padding: @Padding;
+  LayoutMode: Top;
+};
+
+// Usage: $L.@Section #Section { @Title = "Section"; }
+@Section = Group {
+  @Title = "Section";
+  @TitleHeight = 28;
+  @TitleStyle = LabelStyle(FontSize: 14, TextColor: #c6d5e5, RenderUppercase: true, RenderBold: true);
+  @Padding = (Full: 8);
+  LayoutMode: Top;
+
+  Label #Title {
+    Text: @Title;
+    Style: @TitleStyle;
+    Anchor: (Height: @TitleHeight);
+  }
+
+  Group #Body {
+    Padding: @Padding;
+    LayoutMode: Top;
+  }
+};
+
+// Usage: $L.@HeaderBar #Header { @Text = "Header"; }
+@HeaderBar = Group {
+  @Text = "Header";
+  @Height = 36;
+  @Style = LabelStyle(FontSize: 18, TextColor: #e3eef9, RenderBold: true);
+  Anchor: (Height: @Height);
+  LayoutMode: Left;
+
+  Label #HeaderText {
+    Text: @Text;
+    Style: @Style;
+    Anchor: (Height: @Height);
+  }
+};
+
+// Usage: $L.@Spacer #Spacer { @Height = 12; }
+@Spacer = Group {
+  @Height = 8;
+  Anchor: (Height: @Height);
+};
+
+// Usage: $L.@Divider #Divider {}
+@Divider = Group {
+  @Height = 1;
+  @Color = #ffffff(0.08);
+  Anchor: (Height: @Height);
+  Background: @Color;
+};
+
+// Usage: $L.@ButtonRow #Actions { }
+@ButtonRow = Group {
+  @Gap = 8;
+  LayoutMode: Right;
+  Padding: (Top: @Gap);
+};
+
+// Usage: $L.@TwoColumn #Row { }
+@TwoColumn = Group {
+  LayoutMode: Left;
+
+  Group #Left { FlexWeight: 1; LayoutMode: Top; }
+  Group #Right { FlexWeight: 1; LayoutMode: Top; Anchor: (Left: 10); }
+};
+
+// Usage: $L.@ScrollPanel #Scroll { @ScrollbarStyle = $C.@DefaultScrollbarStyle; }
+@ScrollPanel = Group {
+  @ScrollbarStyle = $C.@DefaultScrollbarStyle;
+  LayoutMode: TopScrolling;
+  ScrollbarStyle: @ScrollbarStyle;
+};

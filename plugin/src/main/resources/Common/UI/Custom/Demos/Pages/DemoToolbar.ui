@@ -1,0 +1,30 @@
+$L = "../../Macros/Layout.ui";
+$B = "../../Macros/Toolbar.ui";
+
+Group #DemoToolbar {
+  Anchor: (Full: 0);
+  LayoutMode: Center;
+  Background: #000000(0.55);
+
+  $L.@PageFrame #Frame {
+    @Width = 560;
+    @Height = 220;
+
+    $L.@HeaderBar #Header { @Text = "Demo: Toolbar"; }
+    $L.@Spacer #Space1 { @Height = 8; }
+
+    $L.@Section #SectionA {
+      @Title = "Toolbar";
+
+      $B.@Toolbar #Toolbar {
+        Group #Left {
+          $B.@IconButton #Filter { @Icon = #c6d5e5; }
+          $B.@IconButton #Sort { @Icon = #c6d5e5; }
+        }
+        Group #Right {
+          $B.@IconButton #Refresh { @Icon = #5fc4b6; }
+        }
+      }
+    }
+  }
+}
